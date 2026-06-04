@@ -192,10 +192,10 @@ public class IPCProvider
 
         localPlayerData = [.. config.PetData.Where(player => player.ContentId == playerState.ContentId)];
 
-        var newLocalPlayerData = JsonConvert.SerializeObject(localPlayerData, new JsonSerializerSettings()
+        var newLocalPlayerData = JsonConvert.SerializeObject(localPlayerData/*, new JsonSerializerSettings()
         {
             TypeNameHandling = TypeNameHandling.All,
-        });
+        }*/);
 
         if (string.Equals(newLocalPlayerData, cachedLocalPlayerData, StringComparison.Ordinal))
         {

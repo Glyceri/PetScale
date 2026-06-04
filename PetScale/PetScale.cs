@@ -51,7 +51,11 @@ public sealed class PetScale : IDalamudPlugin
     private readonly Dictionary<string, (float smallScale, float mediumScale, float largeScale)> petSizeMap = new(StringComparer.OrdinalIgnoreCase);
     public static IDictionary<PetModel, PetSize> vanillaPetSizeMap { get; } = new Dictionary<PetModel, PetSize>();
     private readonly Stopwatch stopwatch = new();
+#if DEBUG
+    private double dictionaryExpirationTime => DevWindow.dictionaryRefreshTime;
+#else
     private readonly double dictionaryExpirationTime = TimeSpan.FromMilliseconds(500).TotalMilliseconds;
+#endif
     public static FrozenSet<PetModel> petModelSet { get; } = new HashSet<PetModel>((PetModel[])Enum.GetValues(typeof(PetModel))).ToFrozenSet();
     public static bool DrawAvailable { get; private set; }
 
@@ -126,7 +130,6 @@ public sealed class PetScale : IDalamudPlugin
         objectTable = _objectTable;
         DevWindow = new DevWindow(log, pluginInterface, ipc);
         WindowSystem.AddWindow(DevWindow);
-        dictionaryExpirationTime = TimeSpan.FromMilliseconds(20).TotalMilliseconds;
 #endif
 
         WindowSystem.AddWindow(ConfigWindow);
@@ -615,7 +618,7 @@ public sealed class PetScale : IDalamudPlugin
 #if DEBUG
     private unsafe void DevWindowThings()
     {
-        DevWindow.IsOpen = true;
+        //DevWindow.IsOpen = true;
         DevWindow.Print("Actor pair count: " + secondaryActivePetDictionary.Count.ToString());
         var tempDisplay = secondaryActivePetDictionary;
         foreach (var kvp in tempDisplay)
@@ -648,6 +651,13 @@ public sealed class PetScale : IDalamudPlugin
 
     private void OnCommand(string command, string args)
     {
+#if DEBUG
+        if (!args.IsNullOrWhitespace())
+        {
+            DevWindow.Toggle();
+            return;
+        }
+#endif
         ConfigWindow.Toggle();
     }
 

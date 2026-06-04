@@ -23,6 +23,7 @@ public sealed class DevWindow : Window, IDisposable
     private readonly IPCProvider ipcProvider;
 #pragma warning restore
     private bool redrawWanted = false;
+    public double dictionaryRefreshTime = 500;
 
     private Action tabToDraw;
     private string cachedIPCData = string.Empty;
@@ -72,6 +73,12 @@ public sealed class DevWindow : Window, IDisposable
         }
 
         tabToDraw.Invoke();
+        var temp = (int)dictionaryRefreshTime;
+        ImGui.PushItemWidth(60);
+        if (ImGui.InputInt("Pet dictionary refresh time in ms", ref temp))
+        {
+            dictionaryRefreshTime = temp;
+        }
     }
 
     public void DrawModelTester()
